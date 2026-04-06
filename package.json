@@ -1,0 +1,41 @@
+{
+  "name": "scout-mcp-server",
+  "version": "0.1.0",
+  "description": "MCP server wrapping Scout SDK for AI agents",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "scout-mcp-server": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "bun test",
+    "lint": "eslint src/",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "scout",
+    "scoutos",
+    "ai",
+    "agent",
+    "llm"
+  ],
+  "author": "ScoutOS Labs",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/scoutos-labs/scout-mcp-server.git"
+  }
+}
