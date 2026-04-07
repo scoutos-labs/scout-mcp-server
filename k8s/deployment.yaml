@@ -27,25 +27,12 @@ spec:
         version: v0.1.0
     spec:
       serviceAccountName: scout-live-gateway
-      securityContext:
-        runAsUser: 999
-        runAsGroup: 999
-        runAsNonRoot: true
-        fsGroup: 999
-        seccompProfile:
-          type: RuntimeDefault
+      imagePullSecrets:
+        - name: registry-scout-live
       containers:
         - name: mcp-server
           image: registry.digitalocean.com/scout-live/mcp-server:v0.1.0
           imagePullPolicy: Always
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
-            runAsNonRoot: true
-            readOnlyRootFilesystem: true
-            seccompProfile:
-              type: RuntimeDefault
           ports:
             - containerPort: 3000
           env:

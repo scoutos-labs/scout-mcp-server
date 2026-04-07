@@ -21,6 +21,9 @@ COPY --from=build /app/dist ./dist
 COPY --from=build /app/node_modules ./node_modules
 COPY package.json ./
 
+# Fix permissions
+RUN chmod -R 755 /app
+
 ENV NODE_ENV=production
 ENV MCP_TRANSPORT=http
 ENV PORT=3000
