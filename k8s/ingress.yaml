@@ -1,7 +1,7 @@
 # MCP Server Ingress Route
-# Add this to the main ingress.yaml or apply separately
+# Uses existing *.scoutos.live wildcard certificate
 # 
-# Apply: kubectl apply -f k8s/mcp-ingress.yaml -n scout-live
+# Apply: kubectl apply -f k8s/ingress.yaml
 
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -10,7 +10,6 @@ metadata:
   namespace: scout-live
   annotations:
     kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: letsencrypt-prod-dns
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
@@ -18,7 +17,7 @@ spec:
   tls:
     - hosts:
         - mcp.scoutos.live
-      secretName: mcp.scoutos.live-tls
+      secretName: scoutos.live-tls
   rules:
     - host: mcp.scoutos.live
       http:
