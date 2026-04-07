@@ -1,0 +1,100 @@
+# Scout MCP Server - Kubernetes Deployment
+# MCP server for Scout Live platform
+# 
+# Deploy: kubectl apply -f k8s/deployment.yaml -n scout-live
+# Update: kubectl rollout restart deployment/scout-mcp-server -n scout-live
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scout-mcp-server
+  namespace: scout-live
+  labels:
+    app: scout-mcp-server
+    version: v0.1.0
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: scout-mcp-server
+  template:
+    metadata:
+      labels:
+        app: scout-mcp-server
+        version: v0.1.0
+    spec:
+      serviceAccountName: scout-live-gateway
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+        runAsNonRoot: true
+        fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: mcp-server
+          image: registry.digitalocean.com/scout-live/mcp-server:v0.1.0
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            seccompProfile:
+              type: RuntimeDefault
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: MCP_TRANSPORT
+              value: "http"
+            - name: PORT
+              value: "3000"
+            - name: SCOUT_API_URL
+              value: "https://scoutos.live"
+            - name: SCOUT_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: scout-live-secrets
+                  key: scoutos-api-key
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scout-mcp-server
+  namespace: scout-live
+spec:
+  selector:
+    app: scout-mcp-server
+  ports:
+    - port: 80
+      targetPort: 3000
+  type: ClusterIP
+---
+# Ingress route for external access
+# Add to existing ingress.yaml or create separate route
+# /mcp/* -> scout-mcp-server:80
